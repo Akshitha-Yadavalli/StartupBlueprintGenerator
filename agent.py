@@ -1,8 +1,6 @@
 import os
-from urllib import response
 from dotenv import load_dotenv
 
-from ibm_watsonx_ai import Credentials
 from ibm_watsonx_ai.foundation_models import ModelInference
 
 from rag import retrieve_context
@@ -14,10 +12,10 @@ PROJECT_ID = os.getenv("IBM_PROJECT_ID")
 URL = os.getenv("IBM_URL")
 MODEL_ID = os.getenv("MODEL_ID")
 
-credentials = Credentials(
-    url=URL,
-    api_key=API_KEY
-)
+credentials = {
+    "url": URL,
+    "apikey": API_KEY
+}
 
 model = ModelInference(
     model_id=MODEL_ID,
