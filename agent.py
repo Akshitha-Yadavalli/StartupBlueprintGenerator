@@ -1,4 +1,5 @@
 import os
+from urllib import response
 from dotenv import load_dotenv
 
 from ibm_watsonx_ai import Credentials
@@ -22,10 +23,7 @@ model = ModelInference(
     model_id=MODEL_ID,
     credentials=credentials,
     project_id=PROJECT_ID,
-    params={
-        "max_new_tokens": 1000,
-        "temperature": 0.5
-    }
+    
 )
 
 def generate_blueprint(startup_idea):
@@ -72,6 +70,12 @@ If government schemes, funding opportunities, Startup India benefits, legal requ
 Generate detailed answers.
 """
 
-    response = model.generate_text(prompt=prompt)
+    response = model.generate(
+    prompt=prompt,
+    params={
+        "max_new_tokens": 1000,
+        "temperature": 0.5
+    }
+)
 
-    return response
+    return response["results"][0]["generated_text"]

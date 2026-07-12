@@ -3,7 +3,7 @@ from ibm_watsonx_ai.foundation_models import ModelInference
 
 credentials = Credentials(
     url="https://au-syd.ml.cloud.ibm.com",
-    api_key="U2iM_UezvW_zlU7ba_Z_CbvaB9xijmswttZuGLy_tUAJ"
+    api_key="OLvaYW3ViUfr3M9jOGfU7wGPS65OttkWEToMWeuWi23P"
 )
 
 model = ModelInference(
