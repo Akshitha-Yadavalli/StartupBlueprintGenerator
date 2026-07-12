@@ -1,0 +1,12 @@
+streamlit
+ibm-watsonx-ai
+python-dotenv
+langchain
+langchain-community
+langchain-core
+langchain-text-splitters
+faiss-cpu
+sentence-transformers
+transformers
+torch
+pypdf
