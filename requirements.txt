@@ -1,6 +1,6 @@
 streamlit
 ibm-watsonx-ai==1.3.28
-python-dotenv
+python-dotenv==1.0.1
 langchain
 langchain-community
 langchain-core
