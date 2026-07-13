@@ -1,6 +1,5 @@
 import os
 import streamlit as st
-from dotenv import load_dotenv
 
 from ibm_watsonx_ai import Credentials
 from ibm_watsonx_ai.foundation_models import ModelInference
@@ -12,13 +11,19 @@ from rag import retrieve_context
 # -----------------------------
 
 try:
+    # Streamlit Cloud
     API_KEY = st.secrets["IBM_API_KEY"]
     PROJECT_ID = st.secrets["IBM_PROJECT_ID"]
     URL = st.secrets["IBM_URL"]
     MODEL_ID = st.secrets["MODEL_ID"]
 
 except Exception:
-    load_dotenv()
+    # Local Development
+    try:
+        from dotenv import load_dotenv
+        load_dotenv()
+    except ImportError:
+        pass
 
     API_KEY = os.getenv("IBM_API_KEY")
     PROJECT_ID = os.getenv("IBM_PROJECT_ID")
@@ -26,28 +31,23 @@ except Exception:
     MODEL_ID = os.getenv("MODEL_ID")
 
 # -----------------------------
-# Debug (remove later)
+# Validate credentials
 # -----------------------------
-
-print("API_KEY Loaded:", API_KEY is not None)
-print("PROJECT_ID:", PROJECT_ID)
-print("URL:", URL)
-print("MODEL_ID:", MODEL_ID)
 
 if not API_KEY:
-    raise ValueError("IBM_API_KEY is missing.")
+    raise Exception("IBM_API_KEY not found.")
 
 if not PROJECT_ID:
-    raise ValueError("IBM_PROJECT_ID is missing.")
+    raise Exception("IBM_PROJECT_ID not found.")
 
 if not URL:
-    raise ValueError("IBM_URL is missing.")
+    raise Exception("IBM_URL not found.")
 
 if not MODEL_ID:
-    raise ValueError("MODEL_ID is missing.")
+    raise Exception("MODEL_ID not found.")
 
 # -----------------------------
-# IBM Credentials
+# IBM Watsonx Credentials
 # -----------------------------
 
 credentials = Credentials(
@@ -62,7 +62,7 @@ model = ModelInference(
 )
 
 # -----------------------------
-# Generate Blueprint
+# Generate Startup Blueprint
 # -----------------------------
 
 def generate_blueprint(startup_idea):
@@ -72,7 +72,7 @@ def generate_blueprint(startup_idea):
     prompt = f"""
 You are an expert Startup Business Consultant.
 
-Use the following knowledge while answering.
+Use the following retrieved knowledge while generating the answer.
 
 Knowledge:
 {context}
@@ -100,7 +100,7 @@ Include:
 14. Technology Stack
 15. Future Scope
 
-Provide detailed answers.
+Provide detailed and well-structured answers.
 """
 
     response = model.generate(
