@@ -1,49 +1,86 @@
 import os
+import streamlit as st
 from dotenv import load_dotenv
 
+from ibm_watsonx_ai import Credentials
 from ibm_watsonx_ai.foundation_models import ModelInference
 
 from rag import retrieve_context
 
-load_dotenv()
+# -----------------------------
+# Load credentials
+# -----------------------------
 
-API_KEY = os.getenv("IBM_API_KEY")
-PROJECT_ID = os.getenv("IBM_PROJECT_ID")
-URL = os.getenv("IBM_URL")
-MODEL_ID = os.getenv("MODEL_ID")
+try:
+    API_KEY = st.secrets["IBM_API_KEY"]
+    PROJECT_ID = st.secrets["IBM_PROJECT_ID"]
+    URL = st.secrets["IBM_URL"]
+    MODEL_ID = st.secrets["MODEL_ID"]
 
-credentials = {
-    "url": URL,
-    "apikey": API_KEY
-}
+except Exception:
+    load_dotenv()
+
+    API_KEY = os.getenv("IBM_API_KEY")
+    PROJECT_ID = os.getenv("IBM_PROJECT_ID")
+    URL = os.getenv("IBM_URL")
+    MODEL_ID = os.getenv("MODEL_ID")
+
+# -----------------------------
+# Debug (remove later)
+# -----------------------------
+
+print("API_KEY Loaded:", API_KEY is not None)
+print("PROJECT_ID:", PROJECT_ID)
+print("URL:", URL)
+print("MODEL_ID:", MODEL_ID)
+
+if not API_KEY:
+    raise ValueError("IBM_API_KEY is missing.")
+
+if not PROJECT_ID:
+    raise ValueError("IBM_PROJECT_ID is missing.")
+
+if not URL:
+    raise ValueError("IBM_URL is missing.")
+
+if not MODEL_ID:
+    raise ValueError("MODEL_ID is missing.")
+
+# -----------------------------
+# IBM Credentials
+# -----------------------------
+
+credentials = Credentials(
+    url=URL,
+    api_key=API_KEY
+)
 
 model = ModelInference(
     model_id=MODEL_ID,
     credentials=credentials,
-    project_id=PROJECT_ID,
-    
+    project_id=PROJECT_ID
 )
+
+# -----------------------------
+# Generate Blueprint
+# -----------------------------
 
 def generate_blueprint(startup_idea):
 
-    # Retrieve relevant content from your PDFs
     context = retrieve_context(startup_idea)
 
     prompt = f"""
 You are an expert Startup Business Consultant.
 
-Below is some knowledge retrieved from official startup documents.
+Use the following knowledge while answering.
 
-==========================
+Knowledge:
 {context}
-==========================
-
-Use the above information whenever it is relevant.
-
-Generate a COMPLETE startup blueprint.
 
 Startup Idea:
 {startup_idea}
+
+Generate a COMPLETE Startup Blueprint.
 
 Include:
 
@@ -63,17 +100,15 @@ Include:
 14. Technology Stack
 15. Future Scope
 
-If government schemes, funding opportunities, Startup India benefits, legal requirements, or regulations are present in the retrieved documents, include them in your answer.
-
-Generate detailed answers.
+Provide detailed answers.
 """
 
     response = model.generate(
-    prompt=prompt,
-    params={
-        "max_new_tokens": 1000,
-        "temperature": 0.5
-    }
-)
+        prompt=prompt,
+        params={
+            "temperature": 0.5,
+            "max_new_tokens": 1000
+        }
+    )
 
     return response["results"][0]["generated_text"]

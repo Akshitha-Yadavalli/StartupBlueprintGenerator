@@ -23,12 +23,17 @@ if st.button("Generate Blueprint"):
 
     if idea.strip() == "":
         st.warning("Please enter a startup idea.")
+
     else:
 
         with st.spinner("Generating Blueprint..."):
 
-            result = generate_blueprint(idea)
+            try:
+                result = generate_blueprint(idea)
 
-        st.success("Blueprint Generated Successfully!")
+                st.success("Blueprint Generated Successfully!")
 
-        st.markdown(result)
+                st.markdown(result)
+
+            except Exception as e:
+                st.error(f"Error: {e}")

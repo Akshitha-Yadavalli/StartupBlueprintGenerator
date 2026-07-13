@@ -4,10 +4,7 @@ from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
-
-
 DATA_PATH = "data"
-
 VECTOR_DB = "vectorstore"
 
 
@@ -32,10 +29,14 @@ def create_vector_database():
 
     db.save_local(VECTOR_DB)
 
-    print("Vector Database Created Successfully!")
+    print("Vector Database Created Successfully")
 
 
 def retrieve_context(query):
+
+    if not os.path.exists(VECTOR_DB):
+
+        return ""
 
     embeddings = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2"
